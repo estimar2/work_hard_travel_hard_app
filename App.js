@@ -27,15 +27,18 @@ export default function App() {
       return;
     }
 
-    const newToDos = Object.assign({}, toDos, {
+    const newToDos = {
+      ...toDos,
       [Date.now()]: { text, work: working },
-    });
+    };
+
+    // const newToDos = Object.assign({}, toDos, {
+    //   [Date.now()]: { text, work: working },
+    // });
 
     setToDos(newToDos);
     setText("");
   };
-
-  console.log(toDos, "> toDos");
 
   return (
     <View style={styles.container}>
@@ -71,6 +74,14 @@ export default function App() {
         }
         style={styles.input}
       />
+
+      <ScrollView>
+        {Object.keys(toDos).map(key => (
+          <View style={styles.toDo} key={key}>
+            <Text style={styles.toDoText}>{toDos[key].text}</Text>
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 }
@@ -81,10 +92,9 @@ const styles = StyleSheet.create({
     backgroundColor: theme.bg,
     paddingHorizontal: 20,
   },
-
   header: {
-    flexDirection: "row",
     justifyContent: "space-between",
+    flexDirection: "row",
     marginTop: 100,
   },
   btnText: {
@@ -98,5 +108,20 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     marginVertical: 20,
     fontSize: 18,
+  },
+  toDo: {
+    backgroundColor: theme.toDoBg,
+    marginBottom: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  toDoText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
