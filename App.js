@@ -9,7 +9,11 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { theme } from "./colors";
+
+const STORAGE_KEY = "@toDos";
 
 export default function App() {
   const [working, setWorking] = useState(true);
@@ -17,27 +21,54 @@ export default function App() {
 
   const [toDos, setToDos] = useState({});
 
+  useEffect(() => {
+    loadToDos();
+  }, []);
+
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
 
   const onChangeText = payload => setText(payload);
 
-  const addToDo = () => {
-    if (text === "") {
-      return;
+  const loadToDos = async () => {
+    try {
+      let s = await AsyncStorage.getItem(STORAGE_KEY);
+
+      setToDos(JSON.parse(s));
+    } catch (error) {
+      console.error(error, ">> error");
     }
+  };
 
-    const newToDos = {
-      ...toDos,
-      [Date.now()]: { text, work: working },
-    };
+  const saveToDos = async toSave => {
+    try {
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    } catch (error) {
+      console.error(error, ">> error");
+    }
+  };
 
-    // const newToDos = Object.assign({}, toDos, {
-    //   [Date.now()]: { text, work: working },
-    // });
+  const addToDo = async () => {
+    try {
+      if (text === "") {
+        return;
+      }
 
-    setToDos(newToDos);
-    setText("");
+      const newToDos = {
+        ...toDos,
+        [Date.now()]: { text, working },
+      };
+
+      // const newToDos = Object.assign({}, toDos, {
+      //   [Date.now()]: { text, work: working },
+      // });
+
+      setToDos(newToDos);
+      await saveToDos(newToDos);
+      setText("");
+    } catch (error) {
+      console.error(error, ">> error");
+    }
   };
 
   return (
@@ -76,11 +107,13 @@ export default function App() {
       />
 
       <ScrollView>
-        {Object.keys(toDos).map(key => (
-          <View style={styles.toDo} key={key}>
-            <Text style={styles.toDoText}>{toDos[key].text}</Text>
-          </View>
-        ))}
+        {Object.keys(toDos).map(key =>
+          toDos[key].working === working ? (
+            <View style={styles.toDo} key={key}>
+              <Text style={styles.toDoText}>{toDos[key].text}</Text>
+            </View>
+          ) : null,
+        )}
       </ScrollView>
     </View>
   );
