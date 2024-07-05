@@ -77,7 +77,7 @@ export default function App() {
       { text: "Cancel" },
       {
         text: "I'm Sure",
-        style: "destructive",
+        style: "destructive", // IOS에서만 설정 가능
         onPress: () => {
           const newToDos = { ...toDos };
 
