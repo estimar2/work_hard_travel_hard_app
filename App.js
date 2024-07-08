@@ -81,8 +81,6 @@ export default function App() {
       //   [Date.now()]: { text, work: working },
       // });
 
-      console.log(newToDos, ">> newToDos");
-
       setToDos(newToDos);
       await saveToDos(newToDos);
       setText("");
@@ -97,8 +95,6 @@ export default function App() {
       let newToDos = {
         ...toDos,
       };
-
-      console.log(newToDos[key].completed, ">>       newToDos[key].completed");
 
       newToDos[key].completed = !newToDos[key].completed;
 
